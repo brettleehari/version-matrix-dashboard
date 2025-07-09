@@ -1,295 +1,4 @@
-// Network Graph Data Processing
-  const getNetworkData = () => {
-    const nodes = [];
-    const links = [];
-
-    // Create nodes for applications
-    currentData.applications.forEach(app => {
-      const appId = `${app.name}-${app.version}`;
-      const node = {
-        id: appId,
-        name: `${app.name} ${app.version}`,
-        type: 'application',
-        group: app.name,
-        status: 'application'
-      };
-      nodes.push(node);
-    });
-
-    // Create nodes for base packages and links
-    const basePackageVersions = new Set();
-    currentData.applications.forEach(app => {
-      const appId = `${app.name}-${app.version}`;
-      
-      app.basePackages.forEach(pkg => {
-        const pkgId = `${pkg.name}-${pkg.version}`;
-        
-        // Add base package node if not exists
-        if (!basePackageVersions.has(pkgId)) {
-          basePackageVersions.add(pkgId);
-          const pkgNode = {
-            id: pkgId,
-            name: `${pkg.name} ${pkg.version}`,
-            type: 'basePackage',
-            group: pkg.name,
-            status: pkg.status
-          };
-          nodes.push(pkgNode);
-        }
-
-        // Create link between app and base package
-        links.push({
-          source: appId,
-          target: pkgId,
-          status: pkg.status,
-          relationship: 'depends-on'
-        });
-      });
-    });
-
-    return { nodes, links };
-  };
-
-  // Network Visualization Component
-  const NetworkGraph = () => {
-    useEffect(() => {
-      if (!svgRef.current) return;
-
-      const svg = d3.select(svgRef.current);
-      svg.selectAll("*").remove();
-
-      const width = 1000;
-      const height = 600;
-      const { nodes, links } = getNetworkData();
-
-      svg.attr("width", width).attr("height", height);
-
-      // Create groups for zoom
-      const g = svg.append("g");
-
-      // Define color schemes
-      const colors = {
-        application: '#3b82f6',
-        basePackage: {
-          compatible: '#10b981',
-          deprecated: '#f59e0b', 
-          incompatible: '#ef4444',
-          testing: '#8b5cf6'
-        }
-      };
-
-      // Create force simulation
-      const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(function(d) { return d.id; }).distance(100))
-        .force("charge", d3.forceManyBody().strength(-300))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collision", d3.forceCollide().radius(30));
-
-      // Create links
-      const link = g.append("g")
-        .selectAll("line")
-        .data(links)
-        .enter().append("line")
-        .attr("stroke", function(d) {
-          switch(d.status) {
-            case 'compatible': return '#10b981';
-            case 'deprecated': return '#f59e0b';
-            case 'incompatible': return '#ef4444';
-            case 'testing': return '#8b5cf6';
-            default: return '#6b7280';
-          }
-        })
-        .attr("stroke-opacity", 0.6)
-        .attr("stroke-width", 2);
-
-      // Create nodes
-      const node = g.append("g")
-        .selectAll("g")
-        .data(nodes)
-        .enter().append("g")
-        .call(d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended));
-
-      // Add circles for nodes
-      node.append("circle")
-        .attr("r", function(d) { return d.type === 'application' ? 20 : 15; })
-        .attr("fill", function(d) {
-          if (d.type === 'application') return colors.application;
-          return colors.basePackage[d.status] || '#6b7280';
-        })
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 2);
-
-      // Add labels
-      node.append("text")
-        .text(function(d) { return d.name; })
-        .attr("font-size", "10px")
-        .attr("dx", 25)
-        .attr("dy", 4)
-        .attr("fill", "#374151");
-
-      // Add tooltips
-      node.append("title")
-        .text(function(d) { return `${d.name}\nType: ${d.type}\nStatus: ${d.status}`; });
-
-      // Zoom behavior
-      const zoom = d3.zoom()
-        .scaleExtent([0.1, 4])
-        .on("zoom", (event) => {
-          g.attr("transform", event.transform);
-        });
-
-      svg.call(zoom);
-
-      // Update positions on simulation tick
-      simulation.on("tick", function() {
-        link
-          .attr("x1", function(d) { return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
-          .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; });
-
-        node
-          .attr("transform", function(d) { return `translate(${d.x},${d.y})`; });
-      });
-
-      // Drag functions
-      function dragstarted(event, d) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      }
-
-      function dragged(event, d) {
-        d.fx = event.x;
-        d.fy = event.y;
-      }
-
-      function dragended(event, d) {
-        if (!event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-      }
-
-    }, [currentData]);
-
-    return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Package Dependency Network</h3>
-            <div className="flex gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-                <span>Applications</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span>Compatible</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <span>Deprecated</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span>Incompatible</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                <span>Testing</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border rounded-lg overflow-hidden">
-            <svg ref={svgRef} className="w-full" style={{ minHeight: '600px' }}></svg>
-          </div>
-          
-          <div className="mt-4 text-sm text-gray-600">
-            <p><strong>Instructions:</strong> Drag nodes to rearrange • Scroll to zoom • Hover for details</p>
-            <p><strong>Large circles:</strong> Applications • <strong>Small circles:</strong> Base packages</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Network View
-  const renderNetwork = () => {
-    return (
-      <div className="space-y-6">
-        <NetworkGraph />
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h4 className="font-semibold mb-3 flex items-center gap-2">
-              <Package className="w-4 h-4" />
-              Applications
-            </h4>
-            <div className="text-2xl font-bold text-blue-600 mb-2">
-              {currentData.applications.length}
-            </div>
-            <p className="text-sm text-gray-600">Total application versions</p>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h4 className="font-semibold mb-3 flex items-center gap-2">
-              <Layers className="w-4 h-4" />
-              Base Packages
-            </h4>
-            <div className="text-2xl font-bold text-green-600 mb-2">
-              {new Set(currentData.applications.flatMap(app => 
-                app.basePackages.map(pkg => `${pkg.name}-${pkg.version}`)
-              )).size}
-            </div>
-            <p className="text-sm text-gray-600">Unique package versions</p>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h4 className="font-semibold mb-3 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              Risk Factors
-            </h4>
-            <div className="text-2xl font-bold text-yellow-600 mb-2">
-              {currentData.applications.reduce((count, app) => 
-                count + app.basePackages.filter(pkg => 
-                  pkg.status === 'deprecated' || pkg.status === 'incompatible'
-                ).length, 0
-              )}
-            </div>
-            <p className="text-sm text-gray-600">Deprecated/incompatible dependencies</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'matrix':
-        return renderMatrix();
-      case 'app-to-base':
-        return renderAppToBase();
-      case 'base-to-apps':
-        return renderBaseToApps();
-      case 'roadmap':
-        return renderRoadmap();
-      case 'network':
-        return renderNetwork();
-      default:
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <p className="text-center text-gray-500">
-              {activeTab} view coming soon...
-            </p>
-          </div>
-        );
-    }
-  };
-      import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Upload, Search, Package, Layers, ArrowRight, ArrowLeft, Grid, GitBranch, CheckCircle, AlertCircle, Clock, XCircle, Network } from 'lucide-react';
 import * as d3 from 'd3';
 
@@ -445,16 +154,7 @@ const VersionMatrixApp = () => {
       return matchesSearch && hasStatus;
     });
 
-    const LoadSampleData = () => (
-    <button
-      onClick={() => setMatrixData(sampleData)}
-      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-    >
-      Load Sample Data
-    </button>
-  );
-
-  return (
+    return (
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -663,6 +363,275 @@ const VersionMatrixApp = () => {
     );
   };
 
+  // Network Graph Data Processing
+  const getNetworkData = () => {
+    const nodes = [];
+    const links = [];
+
+    // Create nodes for applications
+    currentData.applications.forEach(app => {
+      const appId = `${app.name}-${app.version}`;
+      const node = {
+        id: appId,
+        name: `${app.name} ${app.version}`,
+        type: 'application',
+        group: app.name,
+        status: 'application'
+      };
+      nodes.push(node);
+    });
+
+    // Create nodes for base packages and links
+    const basePackageVersions = new Set();
+    currentData.applications.forEach(app => {
+      const appId = `${app.name}-${app.version}`;
+      
+      app.basePackages.forEach(pkg => {
+        const pkgId = `${pkg.name}-${pkg.version}`;
+        
+        // Add base package node if not exists
+        if (!basePackageVersions.has(pkgId)) {
+          basePackageVersions.add(pkgId);
+          const pkgNode = {
+            id: pkgId,
+            name: `${pkg.name} ${pkg.version}`,
+            type: 'basePackage',
+            group: pkg.name,
+            status: pkg.status
+          };
+          nodes.push(pkgNode);
+        }
+
+        // Create link between app and base package
+        links.push({
+          source: appId,
+          target: pkgId,
+          status: pkg.status,
+          relationship: 'depends-on'
+        });
+      });
+    });
+
+    return { nodes, links };
+  };
+
+  // Network Visualization Component
+  const NetworkGraph = () => {
+    useEffect(() => {
+      if (!svgRef.current) return;
+
+      const svg = d3.select(svgRef.current);
+      svg.selectAll("*").remove();
+
+      const width = 1000;
+      const height = 600;
+      const { nodes, links } = getNetworkData();
+
+      svg.attr("width", width).attr("height", height);
+
+      // Create groups for zoom
+      const g = svg.append("g");
+
+      // Define color schemes
+      const colors = {
+        application: '#3b82f6',
+        basePackage: {
+          compatible: '#10b981',
+          deprecated: '#f59e0b', 
+          incompatible: '#ef4444',
+          testing: '#8b5cf6'
+        }
+      };
+
+      // Create force simulation
+      const simulation = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(function(d) { return d.id; }).distance(100))
+        .force("charge", d3.forceManyBody().strength(-300))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(30));
+
+      // Create links
+      const link = g.append("g")
+        .selectAll("line")
+        .data(links)
+        .enter().append("line")
+        .attr("stroke", function(d) {
+          switch(d.status) {
+            case 'compatible': return '#10b981';
+            case 'deprecated': return '#f59e0b';
+            case 'incompatible': return '#ef4444';
+            case 'testing': return '#8b5cf6';
+            default: return '#6b7280';
+          }
+        })
+        .attr("stroke-opacity", 0.6)
+        .attr("stroke-width", 2);
+
+      // Create nodes
+      const node = g.append("g")
+        .selectAll("g")
+        .data(nodes)
+        .enter().append("g")
+        .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+      // Add circles for nodes
+      node.append("circle")
+        .attr("r", function(d) { return d.type === 'application' ? 20 : 15; })
+        .attr("fill", function(d) {
+          if (d.type === 'application') return colors.application;
+          return colors.basePackage[d.status] || '#6b7280';
+        })
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 2);
+
+      // Add labels
+      node.append("text")
+        .text(function(d) { return d.name; })
+        .attr("font-size", "10px")
+        .attr("dx", 25)
+        .attr("dy", 4)
+        .attr("fill", "#374151");
+
+      // Add tooltips
+      node.append("title")
+        .text(function(d) { return `${d.name}\nType: ${d.type}\nStatus: ${d.status}`; });
+
+      // Zoom behavior
+      const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+          g.attr("transform", event.transform);
+        });
+
+      svg.call(zoom);
+
+      // Update positions on simulation tick
+      simulation.on("tick", function() {
+        link
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+
+        node
+          .attr("transform", function(d) { return `translate(${d.x},${d.y})`; });
+      });
+
+      // Drag functions
+      function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
+
+      function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+
+    }, [matrixData]);
+
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold">Package Dependency Network</h3>
+            <div className="flex gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                <span>Applications</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span>Compatible</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span>Deprecated</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <span>Incompatible</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                <span>Testing</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="border rounded-lg overflow-hidden">
+            <svg ref={svgRef} className="w-full" style={{ minHeight: '600px' }}></svg>
+          </div>
+          
+          <div className="mt-4 text-sm text-gray-600">
+            <p><strong>Instructions:</strong> Drag nodes to rearrange • Scroll to zoom • Hover for details</p>
+            <p><strong>Large circles:</strong> Applications • <strong>Small circles:</strong> Base packages</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Network View
+  const renderNetwork = () => {
+    return (
+      <div className="space-y-6">
+        <NetworkGraph />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h4 className="font-semibold mb-3 flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              Applications
+            </h4>
+            <div className="text-2xl font-bold text-blue-600 mb-2">
+              {currentData.applications.length}
+            </div>
+            <p className="text-sm text-gray-600">Total application versions</p>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h4 className="font-semibold mb-3 flex items-center gap-2">
+              <Layers className="w-4 h-4" />
+              Base Packages
+            </h4>
+            <div className="text-2xl font-bold text-green-600 mb-2">
+              {new Set(currentData.applications.flatMap(app => 
+                app.basePackages.map(pkg => `${pkg.name}-${pkg.version}`)
+              )).size}
+            </div>
+            <p className="text-sm text-gray-600">Unique package versions</p>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h4 className="font-semibold mb-3 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              Risk Factors
+            </h4>
+            <div className="text-2xl font-bold text-yellow-600 mb-2">
+              {currentData.applications.reduce((count, app) => 
+                count + app.basePackages.filter(pkg => 
+                  pkg.status === 'deprecated' || pkg.status === 'incompatible'
+                ).length, 0
+              )}
+            </div>
+            <p className="text-sm text-gray-600">Deprecated/incompatible dependencies</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'matrix':
@@ -673,6 +642,8 @@ const VersionMatrixApp = () => {
         return renderBaseToApps();
       case 'roadmap':
         return renderRoadmap();
+      case 'network':
+        return renderNetwork();
       default:
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
@@ -683,6 +654,9 @@ const VersionMatrixApp = () => {
         );
     }
   };
+
+  // LoadSampleData component
+  const LoadSampleData = () => (
     <button
       onClick={() => setMatrixData(sampleData)}
       className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
