@@ -1,0 +1,413 @@
+{
+  "basePackages": [
+    {
+      "name": "Python",
+      "versions": {
+        "Web App v3.1": { "version": "3.8.x", "status": "deprecated", "notes": "Legacy support, EOL Oct 2024" },
+        "Web App v3.2": { "version": "3.9.x", "status": "compatible", "notes": "Current stable" },
+        "API Service v2.5": { "version": "3.9.x", "status": "compatible", "notes": "Production ready" },
+        "API Service v2.6": { "version": "3.10.x", "status": "compatible", "notes": "Latest features" },
+        "Data Pipeline v1.8": { "version": "3.10.x", "status": "compatible", "notes": "Optimized performance" },
+        "ML Model Service v4.0": { "version": "3.11.x", "status": "testing", "notes": "Beta testing" },
+        "Analytics Dashboard v2.3": { "version": "3.9.x - 3.10.x", "status": "compatible", "notes": "Flexible versions" }
+      }
+    },
+    {
+      "name": "Node.js",
+      "versions": {
+        "Web App v3.1": { "version": "14.x", "status": "deprecated", "notes": "EOL April 2023" },
+        "Web App v3.2": { "version": "16.x", "status": "compatible", "notes": "LTS until April 2024" },
+        "API Service v2.5": { "version": "16.x", "status": "compatible", "notes": "Stable LTS" },
+        "API Service v2.6": { "version": "18.x", "status": "compatible", "notes": "Current LTS" },
+        "Data Pipeline v1.8": { "version": "18.x", "status": "compatible", "notes": "Performance optimized" },
+        "ML Model Service v4.0": { "version": "20.x", "status": "testing", "notes": "Latest features" },
+        "Analytics Dashboard v2.3": { "version": "16.x - 18.x", "status": "compatible", "notes": "Cross-version compatible" }
+      }
+    },
+    {
+      "name": "PostgreSQL",
+      "versions": {
+        "Web App v3.1": { "version": "12.x", "status": "deprecated", "notes": "EOL November 2024" },
+        "Web App v3.2": { "version": "13.x", "status": "compatible", "notes": "Stable version" },
+        "API Service v2.5": { "version": "13.x", "status": "compatible", "notes": "Production ready" },
+        "API Service v2.6": { "version": "14.x", "status": "compatible", "notes": "Enhanced performance" },
+        "Data Pipeline v1.8": { "version": "15.x", "status": "compatible", "notes": "Latest features" },
+        "ML Model Service v4.0": { "version": "15.x", "status": "compatible", "notes": "Optimized for ML workloads" },
+        "Analytics Dashboard v2.3": { "version": "14.x", "status": "compatible", "notes": "Analytics optimized" }
+      }
+    },
+    {
+      "name": "Redis",
+      "versions": {
+        "Web App v3.1": { "version": "6.x", "status": "compatible", "notes": "Stable caching" },
+        "Web App v3.2": { "version": "7.x", "status": "compatible", "notes": "Enhanced features" },
+        "API Service v2.5": { "version": "6.x", "status": "compatible", "notes": "Session storage" },
+        "API Service v2.6": { "version": "7.x", "status": "compatible", "notes": "Improved performance" },
+        "Data Pipeline v1.8": { "version": "7.x", "status": "compatible", "notes": "Stream processing" },
+        "ML Model Service v4.0": { "version": "7.x", "status": "compatible", "notes": "Model caching" },
+        "Analytics Dashboard v2.3": { "version": "7.x", "status": "compatible", "notes": "Real-time data" }
+      }
+    },
+    {
+      "name": "Docker",
+      "versions": {
+        "Web App v3.1": { "version": "20.x", "status": "compatible", "notes": "Standard deployment" },
+        "Web App v3.2": { "version": "23.x", "status": "compatible", "notes": "Latest stable" },
+        "API Service v2.5": { "version": "20.x", "status": "compatible", "notes": "Production deployment" },
+        "API Service v2.6": { "version": "24.x", "status": "testing", "notes": "Testing new features" },
+        "Data Pipeline v1.8": { "version": "23.x", "status": "compatible", "notes": "Container orchestration" },
+        "ML Model Service v4.0": { "version": "24.x", "status": "testing", "notes": "GPU support testing" },
+        "Analytics Dashboard v2.3": { "version": "23.x", "status": "compatible", "notes": "Microservices deployment" }
+      }
+    },
+    {
+      "name": "Kubernetes",
+      "versions": {
+        "Web App v3.1": { "version": "1.25.x", "status": "deprecated", "notes": "Migration needed" },
+        "Web App v3.2": { "version": "1.27.x", "status": "compatible", "notes": "Stable orchestration" },
+        "API Service v2.5": { "version": "1.26.x", "status": "compatible", "notes": "Production cluster" },
+        "API Service v2.6": { "version": "1.28.x", "status": "compatible", "notes": "Latest features" },
+        "Data Pipeline v1.8": { "version": "1.28.x", "status": "compatible", "notes": "Batch processing" },
+        "ML Model Service v4.0": { "version": "1.29.x", "status": "testing", "notes": "AI/ML optimizations" },
+        "Analytics Dashboard v2.3": { "version": "1.27.x", "status": "compatible", "notes": "Auto-scaling enabled" }
+      }
+    }
+  ],
+  "matrixApplications": [
+    "Web App v3.1",
+    "Web App v3.2", 
+    "API Service v2.5",
+    "API Service v2.6",
+    "Data Pipeline v1.8",
+    "ML Model Service v4.0",
+    "Analytics Dashboard v2.3"
+  ],
+  "applications": [
+    {
+      "name": "Web App",
+      "version": "v3.1",
+      "basePackages": [
+        { "name": "Python", "version": "3.8.x", "status": "deprecated" },
+        { "name": "Node.js", "version": "14.x", "status": "deprecated" },
+        { "name": "PostgreSQL", "version": "12.x", "status": "deprecated" },
+        { "name": "Redis", "version": "6.x", "status": "compatible" },
+        { "name": "Docker", "version": "20.x", "status": "compatible" },
+        { "name": "Kubernetes", "version": "1.25.x", "status": "deprecated" }
+      ]
+    },
+    {
+      "name": "Web App",
+      "version": "v3.2",
+      "basePackages": [
+        { "name": "Python", "version": "3.9.x", "status": "compatible" },
+        { "name": "Node.js", "version": "16.x", "status": "compatible" },
+        { "name": "PostgreSQL", "version": "13.x", "status": "compatible" },
+        { "name": "Redis", "version": "7.x", "status": "compatible" },
+        { "name": "Docker", "version": "23.x", "status": "compatible" },
+        { "name": "Kubernetes", "version": "1.27.x", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "API Service",
+      "version": "v2.5",
+      "basePackages": [
+        { "name": "Python", "version": "3.9.x", "status": "compatible" },
+        { "name": "Node.js", "version": "16.x", "status": "compatible" },
+        { "name": "PostgreSQL", "version": "13.x", "status": "compatible" },
+        { "name": "Redis", "version": "6.x", "status": "compatible" },
+        { "name": "Docker", "version": "20.x", "status": "compatible" },
+        { "name": "Kubernetes", "version": "1.26.x", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "API Service",
+      "version": "v2.6",
+      "basePackages": [
+        { "name": "Python", "version": "3.10.x", "status": "compatible" },
+        { "name": "Node.js", "version": "18.x", "status": "compatible" },
+        { "name": "PostgreSQL", "version": "14.x", "status": "compatible" },
+        { "name": "Redis", "version": "7.x", "status": "compatible" },
+        { "name": "Docker", "version": "24.x", "status": "testing" },
+        { "name": "Kubernetes", "version": "1.28.x", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Data Pipeline",
+      "version": "v1.8",
+      "basePackages": [
+        { "name": "Python", "version": "3.10.x", "status": "compatible" },
+        { "name": "Node.js", "version": "18.x", "status": "compatible" },
+        { "name": "PostgreSQL", "version": "15.x", "status": "compatible" },
+        { "name": "Redis", "version": "7.x", "status": "compatible" },
+        { "name": "Docker", "version": "23.x", "status": "compatible" },
+        { "name": "Kubernetes", "version": "1.28.x", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "ML Model Service",
+      "version": "v4.0",
+      "basePackages": [
+        { "name": "Python", "version": "3.11.x", "status": "testing" },
+        { "name": "Node.js", "version": "20.x", "status": "testing" },
+        { "name": "PostgreSQL", "version": "15.x", "status": "compatible" },
+        { "name": "Redis", "version": "7.x", "status": "compatible" },
+        { "name": "Docker", "version": "24.x", "status": "testing" },
+        { "name": "Kubernetes", "version": "1.29.x", "status": "testing" }
+      ]
+    },
+    {
+      "name": "Analytics Dashboard",
+      "version": "v2.3",
+      "basePackages": [
+        { "name": "Python", "version": "3.9.x - 3.10.x", "status": "compatible" },
+        { "name": "Node.js", "version": "16.x - 18.x", "status": "compatible" },
+        { "name": "PostgreSQL", "version": "14.x", "status": "compatible" },
+        { "name": "Redis", "version": "7.x", "status": "compatible" },
+        { "name": "Docker", "version": "23.x", "status": "compatible" },
+        { "name": "Kubernetes", "version": "1.27.x", "status": "compatible" }
+      ]
+    }
+  ],
+  "dependencyBasePackages": [
+    {
+      "name": "Python",
+      "version": "3.8.x",
+      "applications": [
+        { "name": "Web App", "version": "v3.1", "status": "deprecated" }
+      ]
+    },
+    {
+      "name": "Python",
+      "version": "3.9.x",
+      "applications": [
+        { "name": "Web App", "version": "v3.2", "status": "compatible" },
+        { "name": "API Service", "version": "v2.5", "status": "compatible" },
+        { "name": "Analytics Dashboard", "version": "v2.3", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Python",
+      "version": "3.10.x",
+      "applications": [
+        { "name": "API Service", "version": "v2.6", "status": "compatible" },
+        { "name": "Data Pipeline", "version": "v1.8", "status": "compatible" },
+        { "name": "Analytics Dashboard", "version": "v2.3", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Python",
+      "version": "3.11.x",
+      "applications": [
+        { "name": "ML Model Service", "version": "v4.0", "status": "testing" }
+      ]
+    },
+    {
+      "name": "Node.js",
+      "version": "14.x",
+      "applications": [
+        { "name": "Web App", "version": "v3.1", "status": "deprecated" }
+      ]
+    },
+    {
+      "name": "Node.js",
+      "version": "16.x",
+      "applications": [
+        { "name": "Web App", "version": "v3.2", "status": "compatible" },
+        { "name": "API Service", "version": "v2.5", "status": "compatible" },
+        { "name": "Analytics Dashboard", "version": "v2.3", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Node.js",
+      "version": "18.x",
+      "applications": [
+        { "name": "API Service", "version": "v2.6", "status": "compatible" },
+        { "name": "Data Pipeline", "version": "v1.8", "status": "compatible" },
+        { "name": "Analytics Dashboard", "version": "v2.3", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Node.js",
+      "version": "20.x",
+      "applications": [
+        { "name": "ML Model Service", "version": "v4.0", "status": "testing" }
+      ]
+    },
+    {
+      "name": "PostgreSQL",
+      "version": "12.x",
+      "applications": [
+        { "name": "Web App", "version": "v3.1", "status": "deprecated" }
+      ]
+    },
+    {
+      "name": "PostgreSQL",
+      "version": "13.x",
+      "applications": [
+        { "name": "Web App", "version": "v3.2", "status": "compatible" },
+        { "name": "API Service", "version": "v2.5", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "PostgreSQL",
+      "version": "14.x",
+      "applications": [
+        { "name": "API Service", "version": "v2.6", "status": "compatible" },
+        { "name": "Analytics Dashboard", "version": "v2.3", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "PostgreSQL",
+      "version": "15.x",
+      "applications": [
+        { "name": "Data Pipeline", "version": "v1.8", "status": "compatible" },
+        { "name": "ML Model Service", "version": "v4.0", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Kubernetes",
+      "version": "1.25.x",
+      "applications": [
+        { "name": "Web App", "version": "v3.1", "status": "deprecated" }
+      ]
+    },
+    {
+      "name": "Kubernetes",
+      "version": "1.26.x",
+      "applications": [
+        { "name": "API Service", "version": "v2.5", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Kubernetes",
+      "version": "1.27.x",
+      "applications": [
+        { "name": "Web App", "version": "v3.2", "status": "compatible" },
+        { "name": "Analytics Dashboard", "version": "v2.3", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Kubernetes",
+      "version": "1.28.x",
+      "applications": [
+        { "name": "API Service", "version": "v2.6", "status": "compatible" },
+        { "name": "Data Pipeline", "version": "v1.8", "status": "compatible" }
+      ]
+    },
+    {
+      "name": "Kubernetes",
+      "version": "1.29.x",
+      "applications": [
+        { "name": "ML Model Service", "version": "v4.0", "status": "testing" }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "package": "Python",
+      "timeline": [
+        { 
+          "version": "3.8.x", 
+          "status": "deprecated", 
+          "eol": "Oct 2024", 
+          "apps": ["Web App v3.1"],
+          "recommendations": "Migrate to Python 3.9.x or higher immediately"
+        },
+        { 
+          "version": "3.9.x", 
+          "status": "stable", 
+          "eol": "Oct 2025", 
+          "apps": ["Web App v3.2", "API Service v2.5", "Analytics Dashboard v2.3"],
+          "recommendations": "Current stable version, plan migration to 3.10.x by Q3 2025"
+        },
+        { 
+          "version": "3.10.x", 
+          "status": "stable", 
+          "eol": "Oct 2026", 
+          "apps": ["API Service v2.6", "Data Pipeline v1.8", "Analytics Dashboard v2.3"],
+          "recommendations": "Recommended for new projects"
+        },
+        { 
+          "version": "3.11.x", 
+          "status": "testing", 
+          "eol": "Oct 2027", 
+          "apps": ["ML Model Service v4.0"],
+          "recommendations": "Beta testing for performance-critical applications"
+        }
+      ]
+    },
+    {
+      "package": "Node.js",
+      "timeline": [
+        { 
+          "version": "14.x", 
+          "status": "eol", 
+          "eol": "Apr 2023", 
+          "apps": ["Web App v3.1"],
+          "recommendations": "Immediate migration required - security vulnerabilities"
+        },
+        { 
+          "version": "16.x", 
+          "status": "stable", 
+          "eol": "Apr 2024", 
+          "apps": ["Web App v3.2", "API Service v2.5", "Analytics Dashboard v2.3"],
+          "recommendations": "Current LTS, plan migration to 18.x by Q2 2024"
+        },
+        { 
+          "version": "18.x", 
+          "status": "lts", 
+          "eol": "Apr 2025", 
+          "apps": ["API Service v2.6", "Data Pipeline v1.8", "Analytics Dashboard v2.3"],
+          "recommendations": "Current LTS, recommended for production"
+        },
+        { 
+          "version": "20.x", 
+          "status": "testing", 
+          "eol": "Apr 2026", 
+          "apps": ["ML Model Service v4.0"],
+          "recommendations": "Latest features, testing for compatibility"
+        }
+      ]
+    },
+    {
+      "package": "Kubernetes",
+      "timeline": [
+        { 
+          "version": "1.25.x", 
+          "status": "deprecated", 
+          "eol": "Oct 2023", 
+          "apps": ["Web App v3.1"],
+          "recommendations": "Upgrade to 1.27.x or higher immediately"
+        },
+        { 
+          "version": "1.26.x", 
+          "status": "stable", 
+          "eol": "Feb 2024", 
+          "apps": ["API Service v2.5"],
+          "recommendations": "Plan upgrade to 1.28.x by Q1 2024"
+        },
+        { 
+          "version": "1.27.x", 
+          "status": "stable", 
+          "eol": "Jun 2024", 
+          "apps": ["Web App v3.2", "Analytics Dashboard v2.3"],
+          "recommendations": "Current stable, upgrade to 1.28.x recommended"
+        },
+        { 
+          "version": "1.28.x", 
+          "status": "stable", 
+          "eol": "Oct 2024", 
+          "apps": ["API Service v2.6", "Data Pipeline v1.8"],
+          "recommendations": "Latest stable, recommended for production"
+        },
+        { 
+          "version": "1.29.x", 
+          "status": "testing", 
+          "eol": "Feb 2025", 
+          "apps": ["ML Model Service v4.0"],
+          "recommendations": "Testing AI/ML optimizations and new features"
+        }
+      ]
+    }
+  ]
+}
