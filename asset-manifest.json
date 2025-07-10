@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/version-matrix-dashboard/static/css/main.045e7d13.css",
-    "main.js": "/version-matrix-dashboard/static/js/main.f3d15a89.js",
+    "main.css": "/version-matrix-dashboard/static/css/main.013429c5.css",
+    "main.js": "/version-matrix-dashboard/static/js/main.3b3e219a.js",
     "static/js/453.8f710b31.chunk.js": "/version-matrix-dashboard/static/js/453.8f710b31.chunk.js",
     "index.html": "/version-matrix-dashboard/index.html",
-    "main.045e7d13.css.map": "/version-matrix-dashboard/static/css/main.045e7d13.css.map",
-    "main.f3d15a89.js.map": "/version-matrix-dashboard/static/js/main.f3d15a89.js.map",
+    "main.013429c5.css.map": "/version-matrix-dashboard/static/css/main.013429c5.css.map",
+    "main.3b3e219a.js.map": "/version-matrix-dashboard/static/js/main.3b3e219a.js.map",
     "453.8f710b31.chunk.js.map": "/version-matrix-dashboard/static/js/453.8f710b31.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.045e7d13.css",
-    "static/js/main.f3d15a89.js"
+    "static/css/main.013429c5.css",
+    "static/js/main.3b3e219a.js"
   ]
 }
